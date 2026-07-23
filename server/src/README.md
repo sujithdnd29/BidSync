@@ -1,0 +1,2 @@
+# BidSync
+Auction Ready platform
