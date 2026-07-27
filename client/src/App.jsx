@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import Layout from "./components/Layout";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -12,33 +13,36 @@ import AuctionDetails from "./pages/AuctionDetails";
 
 function App() {
   return (
-    <>
-      <Navbar />
-
+    <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-         <Route path="/profile" 
+
+        <Route
+          path="/profile"
           element={
-           <ProtectedRoute>
+            <ProtectedRoute>
               <Profile />
-           </ProtectedRoute>
+            </ProtectedRoute>
           }
         />
-       <Route path="/create-auction"
-         element={
-          <ProtectedRoute>
-             <CreateAuction />
-          </ProtectedRoute>
-         }
-      />
-      <Route
-    path="/auction/:id"
-    element={<AuctionDetails />}
-/>
+
+        <Route
+          path="/create-auction"
+          element={
+            <ProtectedRoute>
+              <CreateAuction />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/auction/:id"
+          element={<AuctionDetails />}
+        />
       </Routes>
-    </>
+    </Layout>
   );
 }
 
