@@ -1,4 +1,5 @@
 const bidService = require("../services/bidService");
+const { getIO } = require("../socket");
 
 const placeBid = async (req, res) => {
     try {
@@ -10,6 +11,9 @@ const placeBid = async (req, res) => {
             req.user._id,
             amount
         );
+          const io = getIO();
+
+        io.to(req.params.auctionId).emit("new-bid");
 
         res.status(201).json({
             success: true,
