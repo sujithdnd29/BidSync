@@ -18,6 +18,19 @@ function AuctionCard({ auction }) {
                 borderRadius: "8px",
             }}
         >
+            {auction.images?.length > 0 && (
+    <img
+        src={auction.images[0].url}
+        alt={auction.title}
+        style={{
+            width: "100%",
+            height: "220px",
+            objectFit: "cover",
+            borderRadius: "8px",
+            marginBottom: "10px",
+        }}
+    />
+)}
 
             <h2>{auction.title}</h2>
 

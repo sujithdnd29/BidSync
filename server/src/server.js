@@ -1,4 +1,5 @@
 require("dotenv").config();
+const startAuctionStatusJob = require("./jobs/auctionStatus.job");
 
 const http = require("http");
 const { Server } = require("socket.io");
@@ -60,6 +61,7 @@ const PORT = process.env.PORT || 5000;
 // Connect Database
 connectDB();
 
+startAuctionStatusJob();
 // Start Server
 server.listen(PORT, () => {
 

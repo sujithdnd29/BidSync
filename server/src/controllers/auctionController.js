@@ -8,9 +8,9 @@ const createAuction = async (req, res) => {
 
         const auction = await auctionService.createAuction(
             {
-                title,description,category,startingPrice,images,startTime,endTime,
+                title,description,category,startingPrice,startTime,endTime,
             },
-            req.user._id
+            req.user._id,req.files
         );
 
         res.status(201).json({
@@ -19,6 +19,13 @@ const createAuction = async (req, res) => {
             auction,
         });
     } catch (error) {
+       console.log(error);
+console.log(error.message);
+console.log(error.http_code);
+
+if (error.error) {
+    console.log(error.error);
+}
         res.status(400).json({
             success: false,
             message: error.message,

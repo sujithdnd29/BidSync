@@ -1,11 +1,20 @@
 const Auction = require("../models/Auction");
 const mongoose = require("mongoose");
 const { AUCTION_STATUS } = require("../constants/auctionConstants");
+const fs = require("fs-extra");
+const cloudinary = require("../config/cloudinary");
+const Bid = require("../models/Bid");
 
-const createAuction = async (auctionData, sellerId) => {
+const createAuction = async (auctionData, sellerId,files) => {
+    
+
     const {
-        title, description,category,startingPrice,
-        images,startTime,endTime,
+        title,
+        description,
+        category,
+        startingPrice,
+        startTime,
+        endTime,
     } = auctionData;
 
     // Business Validation
@@ -13,11 +22,53 @@ const createAuction = async (auctionData, sellerId) => {
         throw new Error("Start time must be before end time.");
     }
 
+    const now = new Date();
+
+    let status;
+
+    if (now < new Date(startTime)) {
+
+        status = AUCTION_STATUS.UPCOMING;
+
+    } else if (now < new Date(endTime)) {
+
+        status = AUCTION_STATUS.ACTIVE;
+
+    } else {
+
+        status = AUCTION_STATUS.ENDED;
+
+    }
+const uploadedImages = [];
+
+if (files && files.length > 0) {
+
+    for (const file of files) {
+
+        const result = await cloudinary.uploader.upload(file.path, {
+            folder: "BidSync/Auctions",
+        });
+
+        uploadedImages.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+        });
+
+        await fs.remove(file.path);
+    }
+}
+
     const auction = await Auction.create({
-        title,description,category,startingPrice,
+        title,
+        description,
+        category,
+        startingPrice,
         currentPrice: startingPrice,
-        images,seller: sellerId,
-        startTime,endTime, status: AUCTION_STATUS.UPCOMING,
+        images: uploadedImages,
+        seller: sellerId,
+        startTime,
+        endTime,
+        status,
     });
 
     return auction;
@@ -119,9 +170,19 @@ const deleteAuction = async (auctionId, sellerId) => {
         throw new Error("Only upcoming auctions can be deleted.");
     }
 
+    const bidExists = await Bid.exists({ auction: auctionId });
+
+    if (bidExists) {
+        throw new Error(
+            "Auction cannot be deleted because bids have already been placed."
+        );
+    }
+
+  if (auction.images?.length) {
+    for (const image of auction.images) {
+        await cloudinary.uploader.destroy(image.public_id);
+    }
+}
     await auction.deleteOne();
-
-    return;
 };
-
 module.exports = {createAuction,getAllAuctions,getAuctionById,updateAuction,deleteAuction,};

@@ -10,6 +10,7 @@ function CreateAuction() {
     startTime: "",
     endTime: "",
   });
+  const [images, setImages] = useState([]);
 
   const handleChange = (e) => {
     setFormData({
@@ -17,12 +18,27 @@ function CreateAuction() {
       [e.target.name]: e.target.value,
     });
   };
-
+const handleImageChange = (e) => {
+    setImages(Array.from(e.target.files));
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const data = await createAuction(formData);
+      const auctionFormData = new FormData();
+
+auctionFormData.append("title", formData.title);
+auctionFormData.append("description", formData.description);
+auctionFormData.append("category", formData.category);
+auctionFormData.append("startingPrice", formData.startingPrice);
+auctionFormData.append("startTime", formData.startTime);
+auctionFormData.append("endTime", formData.endTime);
+
+images.forEach((image) => {
+    auctionFormData.append("images", image);
+});
+
+const data = await createAuction(auctionFormData);
 
       alert(data.message);
 
@@ -110,7 +126,17 @@ function CreateAuction() {
       />
 
       <br /><br />
+ <label>Auction Image</label>
+<br />
 
+<input
+    type="file"
+    multiple
+    accept="image/*"
+    onChange={handleImageChange}
+/>
+
+<br /><br />
       <button type="submit">
         Create Auction
       </button>

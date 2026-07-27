@@ -12,6 +12,7 @@ export const createAuction = async (auctionData) => {
         {
             headers: {
                 Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
             },
         }
     );
@@ -29,4 +30,19 @@ export const getAuctionById = async (id) => {
 
     return response.data;
 
+};
+export const deleteAuction = async (id) => {
+
+    const token = localStorage.getItem("token");
+
+    const response = await axios.delete(
+        `${API_URL}/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
 };

@@ -3,8 +3,14 @@ const router = express.Router();
 
 const auctionController = require("../controllers/auctionController");
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
-router.post("/", authMiddleware, auctionController.createAuction);
+router.post(
+    "/",
+    authMiddleware,
+    upload.array("images", 5),
+    auctionController.createAuction
+);
 router.get("/", auctionController.getAllAuctions);
 router.get("/:id", auctionController.getAuctionById);
 router.put("/:id", authMiddleware, auctionController.updateAuction);
