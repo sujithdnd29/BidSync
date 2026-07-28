@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/bids";
+const API_URL = `${import.meta.env.VITE_API_URL}/bids`;
 
 export const placeBid = async (auctionId, amount) => {
 
