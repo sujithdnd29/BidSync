@@ -44,7 +44,9 @@ const uploadedImages = [];
 if (files && files.length > 0) {
 
     for (const file of files) {
-
+         console.log("File:", file);
+    console.log("Path:", file.path);
+    console.log("Exists:", require("fs").existsSync(file.path));
         const result = await cloudinary.uploader.upload(file.path, {
             folder: "BidSync/Auctions",
         });
