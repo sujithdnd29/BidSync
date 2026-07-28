@@ -185,4 +185,18 @@ const deleteAuction = async (auctionId, sellerId) => {
 }
     await auction.deleteOne();
 };
-module.exports = {createAuction,getAllAuctions,getAuctionById,updateAuction,deleteAuction,};
+const getMyAuctions = async (sellerId) => {
+    const auctions = await Auction.find({ seller: sellerId })
+        .sort({ createdAt: -1 });
+
+    return auctions;
+};
+const getWonAuctions = async (userId) => {
+    return await Auction.find({
+        highestBidder: userId,
+        status: "ENDED",
+    })
+        .populate("seller", "name")
+        .sort({ updatedAt: -1 });
+};
+module.exports = {createAuction,getAllAuctions,getAuctionById,updateAuction,deleteAuction,getMyAuctions,getWonAuctions,};

@@ -12,8 +12,15 @@ router.post(
     auctionController.createAuction
 );
 router.get("/", auctionController.getAllAuctions);
-router.get("/:id", auctionController.getAuctionById);
+
 router.put("/:id", authMiddleware, auctionController.updateAuction);
 router.delete("/:id", authMiddleware, auctionController.deleteAuction);
+router.get(
+    "/my-auctions",
+    authMiddleware,
+    auctionController.getMyAuctions
+);
+router.get("/won",authMiddleware,auctionController.getWonAuctions);
+router.get("/:id", auctionController.getAuctionById);
 
 module.exports = router;

@@ -107,8 +107,38 @@ const deleteAuction = async (req, res) => {
         });
     }
 };
+const getMyAuctions = async (req, res) => {
+    try {
+        const auctions = await auctionService.getMyAuctions(req.user._id);
+
+        res.status(200).json({
+            success: true,
+            auctions,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+const getWonAuctions = async (req, res) => {
+    try {
+        const auctions = await auctionService.getWonAuctions(req.user._id);
+
+        res.status(200).json({
+            success: true,
+            auctions,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
 
 
 module.exports = {
-    createAuction,getAllAuctions,getAuctionById,updateAuction,deleteAuction,
+    createAuction,getAllAuctions,getAuctionById,updateAuction,deleteAuction,getMyAuctions,getWonAuctions,
 };
