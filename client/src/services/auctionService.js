@@ -46,3 +46,31 @@ export const deleteAuction = async (id) => {
 
     return response.data;
 };
+export const getMyAuctions = async () => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
+        `${API_URL}/my-auctions`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};
+export const getWonAuctions = async () => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
+        `${API_URL}/won`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};

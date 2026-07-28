@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import {
     getAuctionById,
@@ -12,6 +13,7 @@ import {
 } from "../services/bidService";
 
 import socket from "../services/socket";
+const user = JSON.parse(localStorage.getItem("user"));
 
 function AuctionDetails() {
     const navigate = useNavigate();
@@ -141,10 +143,10 @@ function AuctionDetails() {
 
     const handleBid = async () => {
         if (!bidAmount || Number(bidAmount) <= 0) {
-            alert("Please enter a valid bid amount.");
+           toast.error("Please enter a valid bid amount.");
             return;
         }
-
+      const loading = toast.loading("Placing your bid...");
         try {
             setLoading(true);
 
@@ -154,13 +156,16 @@ function AuctionDetails() {
             await fetchBidHistory();
 
             setBidAmount("");
+             toast.dismiss(loading);
 
-            alert("Bid placed successfully!");
+            toast.success("🎉 Bid placed successfully!");
         } catch (error) {
-            alert(
-                error.response?.data?.message ||
-                    "Something went wrong."
-            );
+            toast.dismiss(loading);
+
+            toast.error(
+    error.response?.data?.message ||
+    "Failed to place bid."
+);
         } finally {
             setLoading(false);
         }
@@ -172,15 +177,18 @@ function AuctionDetails() {
         );
 
         if (!confirmDelete) return;
+        const loading = toast.loading("Deleting auction...");
 
         try {
             await deleteAuction(id);
+             toast.dismiss(loading);
 
-            alert("Auction deleted successfully.");
+            toast.success("Auction deleted successfully.");
 
             navigate("/");
         } catch (error) {
-            alert(
+             toast.dismiss(loading);
+            toast.error(
                 error.response?.data?.message ||
                     "Failed to delete auction."
             );
@@ -228,6 +236,8 @@ function AuctionDetails() {
         currentUser &&
         auction.seller &&
         currentUser.id === auction.seller._id;
+      console.log("Logged in user:", user);
+console.log("Highest Bidder:", auction.highestBidder);  
 
     return (
        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -387,26 +397,38 @@ top-24">
                     </button>
                 )}
 
-            {countdown.phase === "ENDED" && (
-                <div className="mt-8 rounded-xl bg-green-50 border border-green-300 p-5">
+           {countdown.phase === "ENDED" && (
+    <div className="mt-8 rounded-xl bg-green-50 border border-green-300 p-5">
 
-                    <h3 className="text-xl font-bold text-green-700">
-                        🏆 Auction Result
-                    </h3>
+        <h3 className="text-xl font-bold text-green-700">
+            🏆 Auction Result
+        </h3>
 
-                    <p className="mt-3">
-                        Winner:{" "}
-                        {auction.highestBidder?.name ||
-                            "No Winner"}
-                    </p>
+        {auction.highestBidder ? (
+            auction.highestBidder._id === user.id ? (
+                <p className="mt-3 text-green-700 font-semibold text-lg">
+                    🎉 Congratulations! You won this auction.
+                </p>
+            ) : (
+                <p className="mt-3">
+                    Winner:{" "}
+                    <span className="font-semibold">
+                        {auction.highestBidder.name}
+                    </span>
+                </p>
+            )
+        ) : (
+            <p className="mt-3">
+                No bids were placed on this auction.
+            </p>
+        )}
 
-                    <p className="mt-2">
-                        Winning Bid: ₹{" "}
-                        {auction.currentPrice}
-                    </p>
+        <p className="mt-2">
+            Winning Bid: ₹ {auction.currentPrice}
+        </p>
 
-                </div>
-            )}
+    </div>
+)}
 
             <div className="mt-8">
 

@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar";
+
 import Layout from "./components/Layout";
 
 import Home from "./pages/Home";
@@ -16,7 +16,9 @@ function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
+
         <Route path="/login" element={<Login />} />
+
         <Route path="/register" element={<Register />} />
 
         <Route
@@ -39,7 +41,11 @@ function App() {
 
         <Route
           path="/auction/:id"
-          element={<AuctionDetails />}
+          element={
+            <ProtectedRoute>
+              <AuctionDetails />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </Layout>

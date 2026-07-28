@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 
 import { getAllAuctions } from "../services/auctionService";
+import toast from "react-hot-toast";
 
 import AuctionCard from "../components/AuctionCard";
 
 function Home() {
 
     const [auctions, setAuctions] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+const [selectedCategory, setSelectedCategory] = useState("All");
+const [sortBy, setSortBy] = useState("newest");
 
     const fetchAuctions = async () => {
 
@@ -29,6 +33,39 @@ function Home() {
         fetchAuctions();
 
     }, []);
+    const filteredAuctions = [...auctions]
+  .filter((auction) =>
+    auction.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  )
+  .filter((auction) =>
+    selectedCategory === "All"
+      ? true
+      : auction.category === selectedCategory
+  )
+  .sort((a, b) => {
+    switch (sortBy) {
+      case "priceLow":
+        return a.currentPrice - b.currentPrice;
+
+      case "priceHigh":
+        return b.currentPrice - a.currentPrice;
+
+      case "endingSoon":
+        return (
+          new Date(a.endTime) -
+          new Date(b.endTime)
+        );
+
+      case "newest":
+      default:
+        return (
+          new Date(b.createdAt) -
+          new Date(a.createdAt)
+        );
+    }
+  });
 
    return (
   <div className="bg-slate-50 min-h-screen">
@@ -47,7 +84,14 @@ function Home() {
     </p>
 
     <button
-        className="
+    onClick={() =>
+        document
+            .getElementById("live-auctions")
+            ?.scrollIntoView({
+                behavior: "smooth",
+            })
+    }
+    className="
         mt-10
         bg-white
         text-blue-700
@@ -59,31 +103,57 @@ function Home() {
         transition-all
         duration-300
         shadow-lg
-        "
-    >
-        Browse Auctions →
-    </button>
+    "
+>
+    Browse Auctions →
+</button>
 
 </section>
 
     {/* Auctions */}
     <section className="max-w-7xl mx-auto px-6 pb-16">
 
-      <div className="flex justify-between items-center mt-16 mb-8">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mt-16 mb-8">
 
-    <div>
+  <div  id="live-auctions"
+    className="mt-20 scroll-mt-24">
+    <h2 className="text-4xl font-bold text-slate-900">
+      Live Auctions
+    </h2>
 
-        <h2 className="text-4xl font-bold text-slate-900">
-            Live Auctions
-        </h2>
+    <p className="text-gray-500 mt-2">
+      Explore ongoing and upcoming auctions.
+    </p>
+  </div>
 
-        <p className="text-gray-500 mt-2">
-            Explore ongoing and upcoming auctions.
-        </p>
+  <div className="flex flex-col sm:flex-row gap-3">
 
-    </div>
+    <input
+      type="text"
+      placeholder="🔍 Search auctions..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none w-72"
+    />
+
+    <select
+      value={sortBy}
+      onChange={(e) => setSortBy(e.target.value)}
+      className="px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="newest">Newest</option>
+      <option value="priceLow">Price: Low → High</option>
+      <option value="priceHigh">Price: High → Low</option>
+      <option value="endingSoon">Ending Soon</option>
+    </select>
+
+  </div>
 
 </div>
+
+    
+
+
 <div className="flex flex-wrap gap-3 mb-10">
 
     {[
@@ -95,28 +165,43 @@ function Home() {
         "Home"
     ].map((category) => (
 
-        <button
-            key={category}
-            className="
-            px-5 py-2 rounded-full  bg-white shadow hover:bg-blue-600  hover:text-white transition-all duration-300
-            "
-        >
-            {category}
-        </button>
+       <button
+    key={category}
+    onClick={() => setSelectedCategory(category)}
+    className={`px-5 py-2 rounded-full transition-all duration-300 shadow
 
+    ${
+        selectedCategory === category
+        ? "bg-blue-600 text-white"
+        : "bg-white hover:bg-blue-600 hover:text-white"
+    }
+    `}
+>
+    {category}
+</button>
     ))}
 
 </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
 
-        {auctions.map((auction) => (
+       {filteredAuctions.length > 0 ? (
+  filteredAuctions.map((auction) => (
+    <AuctionCard
+      key={auction._id}
+      auction={auction}
+    />
+  ))
+) : (
+  <div className="col-span-full text-center py-20">
+    <h3 className="text-2xl font-semibold text-gray-700">
+      No auctions found
+    </h3>
 
-          <AuctionCard
-            key={auction._id}
-            auction={auction}
-          />
-
-        ))}
+    <p className="text-gray-500 mt-3">
+      Try another search or category.
+    </p>
+  </div>
+)}
 
       </div>
 

@@ -1,6 +1,9 @@
-import { Link } from "react-router-dom";
 
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 function Navbar() {
+  const navigate = useNavigate();
+const [showMenu, setShowMenu] = useState(false);
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
@@ -37,19 +40,48 @@ function Navbar() {
 
           {token ? (
             <>
-              <span className="font-medium text-gray-600">
-                Hi, {user?.name}
-              </span>
+              <div className="relative">
+  <button
+    onClick={() => setShowMenu(!showMenu)}
+    className="font-medium text-gray-700 hover:text-blue-600 transition"
+  >
+    Hi, {user?.name} ▼
+  </button>
 
-              <button
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.reload();
-                }}
-                className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
-              >
-                Logout
-              </button>
+  {showMenu && (
+    <div className="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-xl border overflow-hidden">
+      <button
+        onClick={() => {
+          navigate("/profile");
+          setShowMenu(false);
+        }}
+        className="w-full text-left px-4 py-3 hover:bg-gray-100"
+      >
+        👤 Profile
+      </button>
+
+      <button
+        onClick={() => {
+          navigate("/create-auction");
+          setShowMenu(false);
+        }}
+        className="w-full text-left px-4 py-3 hover:bg-gray-100"
+      >
+        ➕ Sell an Item
+      </button>
+
+      <button
+        onClick={() => {
+          localStorage.clear();
+          navigate("/login");
+        }}
+        className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50"
+      >
+        🚪 Logout
+      </button>
+    </div>
+  )}
+</div>
             </>
           ) : (
             <>

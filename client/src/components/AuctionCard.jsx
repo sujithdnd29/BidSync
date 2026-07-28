@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function AuctionCard({ auction }) {
+function AuctionCard({ auction, isOwner = false }) {
     const statusColors = {
         UPCOMING: "bg-yellow-100 text-yellow-700",
         ACTIVE: "bg-green-100 text-green-700",
@@ -110,30 +110,30 @@ function AuctionCard({ auction }) {
                     </div>
 
                     {/* Seller */}
-                    <div className="mt-6">
-                        <span className="text-gray-600 font-medium">
-                            👤 {auction.seller.name}
-                        </span>
-                    </div>
+                   <div className="mt-6">
+    <span className="text-gray-600 font-medium">
+        {isOwner ? "👤 Your Auction" : `👤 ${auction.seller.name}`}
+    </span>
+</div>
 
                     {/* Button */}
                     <div className="mt-6">
                         <button
-                            className="
-                                w-full
-                                bg-blue-600
-                                hover:bg-blue-700
-                                text-white
-                                font-semibold
-                                py-3
-                                rounded-xl
-                                transition-all
-                                duration-300
-                                hover:scale-[1.02]
-                            "
-                        >
-                            View Auction →
-                        </button>
+    className="
+        w-full
+        bg-blue-600
+        hover:bg-blue-700
+        text-white
+        font-semibold
+        py-3
+        rounded-xl
+        transition-all
+        duration-300
+        hover:scale-[1.02]
+    "
+>
+    {isOwner ? "Manage Auction →" : "View Auction →"}
+</button>
                     </div>
 
                 </div>
